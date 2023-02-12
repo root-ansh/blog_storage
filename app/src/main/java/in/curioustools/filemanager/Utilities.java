@@ -1,7 +1,6 @@
 package in.curioustools.filemanager;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Environment;
 import android.text.format.DateFormat;
@@ -12,7 +11,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
 
-@SuppressWarnings({"WeakerAccess", "unused", "DefaultLocale"})
 public class Utilities {
 
     //    String someFilepath = "image.fromyesterday.test.jpg";

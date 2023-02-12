@@ -1,14 +1,16 @@
 package in.curioustools.filemanager;
 
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import android.os.Environment;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.io.File;
-import java.util.Objects;
 
 /*
          Their are many ways to access the so called "user files" . basically, android implements
@@ -169,14 +171,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        File currentDir = adp.getCurrentDir();
-//        if(currentDir.equals(Environment.getExternalStorageDirectory())){
-//            super.onBackPressed();
-//        }
-//        else {
-//            File previousDir = currentDir.getParentFile();
-//            updateUIData(previousDir);
-//        }
+       try {
+           File currentDir = adp.getCurrentDir();
+           if(currentDir.equals(Environment.getExternalStorageDirectory())){
+               super.onBackPressed();
+           }
+           else {
+               File previousDir = currentDir.getParentFile();
+               updateUIData(previousDir);
+           }
+       }
+       catch (Throwable t){
+           t.printStackTrace();
+           super.onBackPressed();
+       }
 
     }
 

@@ -37,7 +37,7 @@
             />
 
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_filemanager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -45,19 +45,19 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             >
-        </android.support.v7.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
 
-    <android.support.design.widget.BottomNavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/colorAccent"
         android:visibility="invisible"
-        >
+        />
 
-    </android.support.design.widget.BottomNavigationView>
+
 
 
     

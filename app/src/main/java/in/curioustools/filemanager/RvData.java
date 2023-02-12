@@ -1,9 +1,9 @@
 package in.curioustools.filemanager;
 
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
-import java.util.Date;
 
 
 //uses utilities : getFileFolderIcon(),getTimeString(), getMemoryString90
