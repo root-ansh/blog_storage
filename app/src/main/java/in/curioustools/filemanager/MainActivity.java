@@ -1,11 +1,18 @@
 package in.curioustools.filemanager;
 
 
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Environment;
+import android.provider.Settings;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -156,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         rv = findViewById(R.id.rv_filemanager);
         rv.setLayoutManager(new LinearLayoutManager(this));
 
-        File f = new File("/sdcard/");
+        File f = Environment.getExternalStorageDirectory();
         Utilities.logFileDetails(f);
         adp = new RvAdapter(f);
 
@@ -188,5 +195,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(menu==null)return false;
+        menu.add(Menu.NONE,0,Menu.NONE,"Request Permission for newer devices").setOnMenuItemClickListener(
+                item -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        Intent intent =new  Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this,("permission not available. your device has os that is less than android R(${Build.VERSION_CODES.R})"),Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                }
+        );
+        return true;
+    }
 }
 
