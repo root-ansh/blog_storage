@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center_vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/ic_audio"
+        android:scaleType="fitXY"
+        android:padding="4dp"
+        android:id="@+id/ivFileIcon"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            tools:text="@tools:sample/lorem/random"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:id="@+id/tvName"
+            />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+            <TextView
+                android:id="@+id/tvPath"
+                android:paddingVertical="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollHorizontally="true"
+                android:textColor="@color/black"
+                android:textSize="9sp"
+                tools:text="📁storage  >  📁emulated  >  📁0  >  📁.tmpb  >  📁.cachePicPathsFinder  >  📁emulated  >  📁0  >  📁.tmpb  >  📁.cachePicPathsFinder  >  📁emulated  >  📁0  >  📁.tmpb  >  📁.cachePicPathsFinder  >  📁emulated  >  📁0  >  📁.tmpb  >  📁.cachePicPathsFinder  >  📁emulated  >  📁0  >  📁.tmpb  >  📁.cachePicPathsFinder" />
+        </HorizontalScrollView>
+        <TextView
+            android:id="@+id/tvPathHorizontal"
+            android:paddingVertical="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="9sp"
+            tools:text="📁storage,📁storage," />
+
+
+        <TextView
+            android:id="@+id/tvSizeOrContents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollHorizontally="true"
+            android:textSize="9sp"
+            tools:text="size: 4gb" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#efefef"
+            android:layout_marginBottom="2dp"
+            />
+
+
+
+
+    </LinearLayout>
+
+</LinearLayout>
