@@ -21,6 +21,7 @@ class DocumentWidgetConfigureActivity : ExternalActivitiesHandlerActivity() {
         super.onCreate(savedInstanceState)
         finishIfUnintendedLaunchOrSetCancelled()
         setContentView(binding.root)
+        supportActionBar?.title = "Configure Your Widget"
 
         setPDFUnAvailableUi()
 
