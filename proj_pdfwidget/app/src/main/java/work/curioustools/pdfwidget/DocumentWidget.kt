@@ -39,21 +39,22 @@ class DocumentWidget : AppWidgetProvider() {
         const val PREFS_NAME = "pdf_widget_current_widgets"
         const val PREF_PREFIX_KEY = "appwidget_"
 
-        fun AppWidgetManager.updateWidget(context: Context, appWidgetId: Int){
-            val prefs = context.getSharedPreferences(PREFS_NAME, 0)
-            val titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null)
-            val widgetText =  titleValue ?: context.getString(R.string.appwidget_text)
-
-            // Construct the RemoteViews object
-            val views = RemoteViews(context.packageName, R.layout.document_widget)
-            views.setTextViewText(R.id.appwidget_text, widgetText)
-
-            // Instruct the widget manager to update the widget
-            updateAppWidget(appWidgetId, views)
-        }
     }
 
 }
+fun AppWidgetManager.updateWidget(context: Context, appWidgetId: Int){
+    val prefs = context.getSharedPreferences(DocumentWidget.PREFS_NAME, 0)
+    val titleValue = prefs.getString(DocumentWidget.PREF_PREFIX_KEY + appWidgetId, null)
+    val widgetText =  titleValue ?: context.getString(R.string.appwidget_text)
+
+    // Construct the RemoteViews object
+    val views = RemoteViews(context.packageName, R.layout.document_widget)
+    views.setTextViewText(R.id.appwidget_text, widgetText)
+
+    // Instruct the widget manager to update the widget
+    updateAppWidget(appWidgetId, views)
+}
+
 
 
 
