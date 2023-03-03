@@ -4,115 +4,95 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import com.github.barteksc.pdfviewer.PDFView
-import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
-import work.curioustools.pdfwidget.DocumentWidget.Companion.PREFS_NAME
-import work.curioustools.pdfwidget.DocumentWidget.Companion.PREF_PREFIX_KEY
-import work.curioustools.pdfwidget.databinding.DocumentWidgetConfigureBinding
 
-class DocumentWidgetConfigureActivity : ExternalActivitiesHandlerActivity() {
+import work.curioustools.pdfwidget.databinding.DocumentWidgetConfigureBinding
+import work.curioustools.pdfwidget.utils.SafePrefs
+import work.curioustools.pdfwidget.utils.Utils
+
+import kotlin.concurrent.thread
+
+class DocumentWidgetConfigureActivity : ExternalActivitiesHandlerActivity(), Utils {
     private  val binding by lazy { DocumentWidgetConfigureBinding.inflate(layoutInflater) }
     private val appWidgetId by lazy { intent?.extras?.getInt(EXTRA_APPWIDGET_ID)?:INVALID_APPWIDGET_ID  } // we receive a new widget id from system everytime our activity is called
+    private var currentPage = 0
+    private var maxPages = 1
+    private var fileName: String  = ""
+    private var bitmap: Bitmap? = null
+    private var currentPDFUri: Uri? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         finishIfUnintendedLaunchOrSetCancelled()
         setContentView(binding.root)
         supportActionBar?.title = "Configure Your Widget"
-
         setPDFUnAvailableUi()
-
-
     }
 
     private fun setPDFUnAvailableUi() {
         currentPage = 0
         maxPages = 1
         fileName  = ""
-        authorName = ""
-        bookTitle  = ""
-        currentUri = null
+        bitmap = null
+        currentPDFUri = null
 
         with(binding){
             cvInstruction.visibility = View.VISIBLE
             clCreateWidget.visibility = View.GONE
             btChooseFile.setOnClickListener { requestFile(onResult = ::handleDocumentUri) }
-            pdfView.visibility = View.INVISIBLE
+            ivPdfView.visibility = View.INVISIBLE
         }
-
-
     }
 
-    private var currentPage = 0
-    private var maxPages = 1
-    private var fileName: String  = ""
-    private var authorName:String = ""
-    private var bookTitle : String = ""
-    private var currentUri: Uri? = null
 
-    private fun handleDocumentUri(uri: Uri) {
-        currentUri = uri
-        loadImage {
-            maxPages = binding.pdfView.pageCount
-            bookTitle = binding.pdfView.documentMeta?.title ?: ""
-            authorName = binding.pdfView.documentMeta?.author ?: ""
-            setPDFAvailableUI()
+    private fun handleDocumentUri(uri: Uri){
+        currentPDFUri = uri
+        fun setPageDetailsAndImage(pageNum:Int){
+            if (pageNum !in 0.until(maxPages)) return
+            currentPage = pageNum
+            bitmap = binding.ivPdfView.newBitMap()
+
+            thread {
+                maxPages = contentResolver.getPDFPageCount(uri)
+                runOnUiThread { binding.tvPdfPage.text = "Page: ${currentPage+1}/$maxPages" }
+            }
+
+            thread {
+                contentResolver.updateBitMapWithPDFPage(bitmap!!,currentPage,uri)
+                runOnUiThread {
+                    binding.ivPdfView.setImageBitmap(bitmap)
+                }
+            }
         }
-
-    }
-
-    private fun loadImage(loadComplete: OnLoadCompleteListener? = null) {
-        val configurator: PDFView.Configurator = binding
-            .pdfView
-            .fromUri(currentUri)
-            .enableSwipe(false)
-            .swipeHorizontal(false)
-            .enableDoubletap(false)
-            .defaultPage(currentPage)
-        if(loadComplete!=null)configurator.onLoad (loadComplete)
-        configurator.load()
-    }
-
-    private fun setPDFAvailableUI() {
-        fun loadPageNumber(){
-            binding.tvPdfPage.text = "Page: ${currentPage+1}/$maxPages"
+        fun setFileName(){
+            thread {
+                fileName = contentResolver.getFileNameFromUri(uri)
+                runOnUiThread { binding.tvTitle.text = fileName }
+            }
         }
 
         with(binding){
             cvInstruction.visibility = View.GONE
             clCreateWidget.visibility = View.VISIBLE
-            pdfView.visibility = View.VISIBLE
+            ivPdfView.visibility = View.VISIBLE
 
-
-            tvTitle.text = bookTitle
-            tvAuthor.text = authorName
-            tvPDFName.text = fileName
-            loadImage()
-            loadPageNumber()
+            setPageDetailsAndImage(0)
+            setFileName()
 
             ibtLeft.setOnClickListener {
-                if(currentPage<=0)currentPage = 0
-                else currentPage--
-                loadImage()
-                loadPageNumber()
+                setPageDetailsAndImage(currentPage-1)
             }
             ibtRight.setOnClickListener {
-                if(currentPage<maxPages-1) currentPage++
-                else currentPage = maxPages-1
-                loadImage()
-                loadPageNumber()
+                setPageDetailsAndImage(currentPage+1)
             }
             btCreateWidget.setOnClickListener { makeWidget() }
             btUseAnotherPDF.setOnClickListener { setPDFUnAvailableUi() }
-
-
-
-
         }
     }
+
 
     private fun finishIfUnintendedLaunchOrSetCancelled() {
         if (appWidgetId == INVALID_APPWIDGET_ID) {
@@ -126,21 +106,33 @@ class DocumentWidgetConfigureActivity : ExternalActivitiesHandlerActivity() {
 
     }
 
-    private fun makeWidget(widgetText:String="") {
+    private fun makeWidget() {
         val ctx = this?:return
+        val spKey = Utils.getSPKeyForWidgetId(appWidgetId)
+        val isChecked = binding.cbShowName.isChecked
 
-        /* Write the prefix to the SharedPreferences object for this widget */
-        val prefs = ctx.getSharedPreferences(PREFS_NAME, 0).edit()
-        prefs.putString(PREF_PREFIX_KEY + appWidgetId, widgetText)
-        prefs.apply()
+        thread {
+            val sp = SafePrefs.instance(ctx)
 
+            val contentUri = currentPDFUri
+            val fileUri =
+            sp.putString("${spKey}_uri",currentPDFUri.toString(),immediate = true)
+            if(isChecked) sp.putString("${spKey}_name",fileName,immediate = true)
 
-        /* It is the responsibility of the configuration activity to update the app widget */
-        AppWidgetManager.getInstance(ctx).updateWidget(ctx,appWidgetId)
+            log("spkey:$spKey | isChecked:$isChecked | bitmap: ${bitmap?.hashCode()}")
+            Utils.storeImageToCache(bitmap!!,spKey,ctx.filesDir)
 
-        val resultValue = Intent().also { it.putExtra(EXTRA_APPWIDGET_ID,appWidgetId) }
-        setResult(RESULT_OK, resultValue)
-        finish()
+            log("spkey:$spKey | isChecked:$isChecked | bitmap: ${bitmap?.hashCode()}")
+
+            runOnUiThread {
+                val mgr = AppWidgetManager.getInstance(ctx)
+                DocumentWidget.updateWidgetUI(ctx,appWidgetId,mgr)
+
+                val resultValue = Intent().also { it.putExtra(EXTRA_APPWIDGET_ID,appWidgetId) }
+                setResult(RESULT_OK, resultValue)
+                finish()
+            }
+        }
     }
 
 

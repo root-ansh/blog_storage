@@ -4,8 +4,8 @@
     <string name="action_no_permission">Give Permission</string>
     <string name="msg_permission">Go to widget\'s screen to set a widget for your PDF</string>
     <string name="action_permission">Check Widgets</string>
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="appwidget_text">Book Name</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
-    <string name="app_widget_description">This is an app widget description</string>
+    <string name="app_widget_description">Add a pdf to screen</string>
 </resources>

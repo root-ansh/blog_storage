@@ -20,7 +20,7 @@ class MainActivity : ExternalActivitiesHandlerActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getPermissions()
+        //getPermissions()
     }
 
     fun getPermissions(){

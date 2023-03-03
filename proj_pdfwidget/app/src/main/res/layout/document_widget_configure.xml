@@ -15,14 +15,14 @@
         android:background="#dedede"
         app:srcCompat="@drawable/ic_book"
         android:layout_gravity="center"
-        app:layout_constraintTop_toTopOf="@id/pdfView"
-        app:layout_constraintBottom_toBottomOf="@id/pdfView"
-        app:layout_constraintStart_toStartOf="@id/pdfView"
-        app:layout_constraintEnd_toEndOf="@id/pdfView"
+        app:layout_constraintTop_toTopOf="@id/ivPdfView"
+        app:layout_constraintBottom_toBottomOf="@id/ivPdfView"
+        app:layout_constraintStart_toStartOf="@id/ivPdfView"
+        app:layout_constraintEnd_toEndOf="@id/ivPdfView"
         />
 
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/pdfView"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivPdfView"
         android:layout_width="210dp"
         android:layout_height="297dp"
         android:background="#dedede"
@@ -36,7 +36,10 @@
 
 
 
-    <TextView
+
+
+
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvInstructions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -80,7 +83,7 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvPdfPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -110,8 +113,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Show Book name on Thumbnail?"
+        android:id="@+id/cbShowName"
+        app:layout_constraintStart_toStartOf="@id/ibtLeft"
+        app:layout_constraintEnd_toEndOf="@id/ibtRight"
+        app:layout_constraintTop_toBottomOf="@id/ibtLeft"
+        />
 
-    <TextView
+
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -122,35 +135,13 @@
         android:textSize="18sp"
         android:gravity="center"
         android:layout_marginHorizontal="48dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
 
-        app:layout_constraintTop_toBottomOf="@id/tvPdfPage"
+        app:layout_constraintTop_toBottomOf="@id/cbShowName"
         />
 
 
-    <TextView
-        android:id="@+id/tvAuthor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="My Big book of joice"
-        android:gravity="center"
-        android:layout_marginTop="12dp"
-        android:layout_marginHorizontal="48dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        />
 
-    <TextView
-        android:id="@+id/tvPDFName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My Big book of joice"
-        android:gravity="center"
-        android:layout_marginTop="12dp"
-
-        android:layout_marginHorizontal="48dp"
-        app:layout_constraintTop_toBottomOf="@id/tvAuthor"
-        />
 
 
     <com.google.android.material.button.MaterialButton
@@ -190,13 +181,13 @@
         android:layout_height="match_parent"
         app:constraint_referenced_ids="btChooseFile,tvInstructions"
         android:id="@+id/cvInstruction"
-        android:visibility="visible"
+        android:visibility="gone"
         />
 
     <androidx.constraintlayout.widget.Group
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="tvTitle,ibtLeft,ibtRight,tvPdfPage,tvTitle,tvAuthor,tvPDFName,btCreateWidget,btUseAnotherPDF"
+        app:constraint_referenced_ids="tvTitle,ibtLeft,ibtRight,tvPdfPage,tvTitle,btCreateWidget,btUseAnotherPDF,cbShowName"
         android:visibility="visible"
         android:id="@+id/clCreateWidget"
         />

@@ -1,8 +1,7 @@
-package work.curioustools.pdfwidget
+package work.curioustools.pdfwidget.utils
 
 import android.os.Handler
 import android.os.Looper
-import kotlin.concurrent.thread
 
 
 class QueueTask<T>(
@@ -47,9 +46,9 @@ class AppExecutor private constructor(){
 
         fun sharedQueueTask(): AppExecutor {
 
-            if(singleton!=null) return singleton!!
+            if(singleton !=null) return singleton!!
             synchronized(SafePrefs::class.java){
-                if(singleton!=null)return singleton!!
+                if(singleton !=null)return singleton!!
                 else{
                     singleton = AppExecutor()
                     singleton

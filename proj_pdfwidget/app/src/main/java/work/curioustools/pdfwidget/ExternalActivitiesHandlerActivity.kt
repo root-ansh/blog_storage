@@ -58,3 +58,32 @@ open  class  ExternalActivitiesHandlerActivity:AppCompatActivity(){
 
 
 }
+
+open  class  EAHActivity:AppCompatActivity(){
+
+    private lateinit var arlPickFile: ActivityResultLauncher<Intent>
+    private var callbackPickFile : (Uri) -> Unit = {}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val requestType = ActivityResultContracts.StartActivityForResult()
+        arlPickFile = registerForActivityResult(requestType){
+            val result = it?.resultCode?:RESULT_CANCELED;
+            if(result!= RESULT_OK) return@registerForActivityResult
+            val data = it?.data?.data?:return@registerForActivityResult
+            callbackPickFile.invoke(data)
+            callbackPickFile = {}
+        }
+    }
+
+
+    fun requestFile(category: String = Intent.CATEGORY_OPENABLE, filter : String = "application/pdf", onResult:(Uri)->Unit = {}) {
+        callbackPickFile = onResult
+        val baseIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        baseIntent.addCategory(category)
+        baseIntent.type = filter
+        arlPickFile.launch(baseIntent)
+
+    }
+
+
+}
