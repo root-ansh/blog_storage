@@ -39,6 +39,7 @@
                 android:text="@string/description"
                 android:textColor="@color/white"
                 android:id="@+id/tvInstructions"
+                android:gravity="center"
                 />
 
         </LinearLayout>
