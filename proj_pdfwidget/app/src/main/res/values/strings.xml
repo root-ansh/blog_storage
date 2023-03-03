@@ -8,4 +8,17 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">Add a pdf to screen</string>
+    <string name="instructions">1. Close this app and go to your app\'s home screen. \n2. Long press the screen and press on \'Widgets\'\n3. From the list of widgets, search for \'PDF Widget\'
+    </string>
+    <string name="description">Make widgets from your books and access them on one click!</string>
+    <string name="text_instructions">Instructions.</string>
+    <string name="close_this_screen">Close this Screen</string>
+    <string name="thumbnail">thumbnail</string>
+    <string name="msg_choose_pdf">Choose a PDF file to get started.</string>
+    <string name="choose_file">Choose File</string>
+    <string name="placeholder_page_text">Page: 1/365</string>
+    <string name="msg_ques_show_name">Show Book name on Thumbnail?</string>
+    <string name="msg_placeholder_bookname">My Big book of joy</string>
+    <string name="create_widget">create Widget</string>
+    <string name="use_another_pdf">Use Another PDF ?</string>
 </resources>

@@ -10,8 +10,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.net.toFile
-import work.curioustools.pdfwidget.utils.SafePrefs
-import work.curioustools.pdfwidget.utils.Utils
+import work.curioustools.pdfwidget.utils.*
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -35,36 +34,35 @@ class DocumentWidget : AppWidgetProvider(),Utils {
 
     companion object{
         fun updateWidgetUI(context: Context, appWidgetId: Int, manager: AppWidgetManager){
-            thread {
-                val prefKey = Utils.getSPKeyForWidgetId(appWidgetId)
-                val titleValue =  SafePrefs.instance(context).getString("${prefKey}_name")
-                val uriString = SafePrefs.instance(context).getString("${prefKey}_uri")
-                val bitmap:Bitmap? = Utils.getImageFromCache(prefKey,context.filesDir)
+            val sp = SafePrefs.instance(context)
+            val prefKey = Utils.getSPKeyForWidgetId(appWidgetId)
+            val titleValue =  sp.getString("${prefKey}_name")
+            val uriString = sp.getString("${prefKey}_uri")
+            val file = File(context.filesDir,prefKey)
+            log("key:$prefKey | title:$titleValue| uriString:$uriString | file:$file")
 
-                android.util.Log.e("s","key:$prefKey | title:$titleValue | bitmap:${bitmap?.hashCode()} | uriString:$uriString")
+            thread {
+                val bitmap:Bitmap? = file.toBitMap()
+                log("bitmap:${bitmap?.hashCode()} ")
 
                 Handler(Looper.getMainLooper()).post {
                     val views = RemoteViews(context.packageName, R.layout.document_widget)
-
                     if (titleValue == null) views.setViewVisibility(R.id.appwidget_text,View.GONE)
                     else {
                         views.setViewVisibility(R.id.appwidget_text,View.VISIBLE)
                         views.setTextViewText(R.id.appwidget_text, titleValue)
                     }
 
-
                     if (bitmap != null) {
-                        //views.setImageViewResource(R.id.ivThumb,-1)
                         views.setImageViewBitmap(R.id.ivThumb, bitmap)
                     }
 
                     if(uriString!=null){
                         kotlin.runCatching {
-                            val intent = Utils.getLaunchFilePendingIntent(uriString, context)
+                            val intent =context.getReadContentUriPendingIntent(uriString)
                             views.setOnClickPendingIntent(R.id.ivThumb,intent)
                         }
                     }
-
                     // Instruct the widget manager to update the widget
                     manager.updateAppWidget(appWidgetId, views)
                 }

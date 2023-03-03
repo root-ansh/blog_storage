@@ -1,6 +1,5 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,7 +9,7 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_widget_preview"
-        />
+        android:contentDescription="@string/thumbnail" />
 
     <TextView
         android:id="@+id/appwidget_text"
@@ -19,6 +18,8 @@
         android:background="@drawable/bg_tag_partial"
         android:text="@string/appwidget_text"
         android:padding="8sp"
+        android:maxLines="3"
+        android:ellipsize="end"
         android:textColor="@color/black"
         android:textSize="12sp"
         android:layout_gravity="end"

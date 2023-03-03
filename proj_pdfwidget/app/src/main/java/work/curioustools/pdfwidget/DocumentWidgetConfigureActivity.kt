@@ -10,8 +10,8 @@ import android.os.Bundle
 import android.view.View
 
 import work.curioustools.pdfwidget.databinding.DocumentWidgetConfigureBinding
-import work.curioustools.pdfwidget.utils.SafePrefs
-import work.curioustools.pdfwidget.utils.Utils
+import work.curioustools.pdfwidget.utils.*
+import java.io.File
 
 import kotlin.concurrent.thread
 
@@ -47,8 +47,8 @@ class DocumentWidgetConfigureActivity : ExternalActivitiesHandlerActivity(), Uti
         }
     }
 
-
     private fun handleDocumentUri(uri: Uri){
+        contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         currentPDFUri = uri
         fun setPageDetailsAndImage(pageNum:Int){
             if (pageNum !in 0.until(maxPages)) return
@@ -62,9 +62,7 @@ class DocumentWidgetConfigureActivity : ExternalActivitiesHandlerActivity(), Uti
 
             thread {
                 contentResolver.updateBitMapWithPDFPage(bitmap!!,currentPage,uri)
-                runOnUiThread {
-                    binding.ivPdfView.setImageBitmap(bitmap)
-                }
+                runOnUiThread { binding.ivPdfView.setImageBitmap(bitmap) }
             }
         }
         fun setFileName(){
@@ -82,47 +80,37 @@ class DocumentWidgetConfigureActivity : ExternalActivitiesHandlerActivity(), Uti
             setPageDetailsAndImage(0)
             setFileName()
 
-            ibtLeft.setOnClickListener {
-                setPageDetailsAndImage(currentPage-1)
-            }
-            ibtRight.setOnClickListener {
-                setPageDetailsAndImage(currentPage+1)
-            }
+            ibtLeft.setOnClickListener { setPageDetailsAndImage(currentPage-1) }
+            ibtRight.setOnClickListener { setPageDetailsAndImage(currentPage+1) }
             btCreateWidget.setOnClickListener { makeWidget() }
             btUseAnotherPDF.setOnClickListener { setPDFUnAvailableUi() }
         }
     }
-
-
     private fun finishIfUnintendedLaunchOrSetCancelled() {
         if (appWidgetId == INVALID_APPWIDGET_ID) {
-            // If this activity was started with an intent without an app widget ID, finish with an error.
             finish()
             return
         }
         else{
-            setResult(RESULT_CANCELED) // Set the result to CANCELED.  This will cause the widget host to cancel out of the widget placement if the user presses the back button.
+            // If this activity was started with an intent without an app widget ID, finish with an error.
+            // Set the result to CANCELED.  This will cause the widget host to cancel out of the widget placement if the user presses the back button.
+            setResult(RESULT_CANCELED)
         }
 
     }
 
     private fun makeWidget() {
-        val ctx = this?:return
+        val ctx = this
         val spKey = Utils.getSPKeyForWidgetId(appWidgetId)
         val isChecked = binding.cbShowName.isChecked
+        val sp = SafePrefs.instance(ctx)
+        val file = File(ctx.filesDir,spKey)
+        log("spkey:$spKey | isChecked:$isChecked | bitmap: ${bitmap?.hashCode()} | File:$file")
 
         thread {
-            val sp = SafePrefs.instance(ctx)
-
-            val contentUri = currentPDFUri
-            val fileUri =
             sp.putString("${spKey}_uri",currentPDFUri.toString(),immediate = true)
-            if(isChecked) sp.putString("${spKey}_name",fileName,immediate = true)
-
-            log("spkey:$spKey | isChecked:$isChecked | bitmap: ${bitmap?.hashCode()}")
-            Utils.storeImageToCache(bitmap!!,spKey,ctx.filesDir)
-
-            log("spkey:$spKey | isChecked:$isChecked | bitmap: ${bitmap?.hashCode()}")
+            if(isChecked) { sp.putString("${spKey}_name", fileName, immediate = true) }
+            bitmap.saveToFile(file)
 
             runOnUiThread {
                 val mgr = AppWidgetManager.getInstance(ctx)

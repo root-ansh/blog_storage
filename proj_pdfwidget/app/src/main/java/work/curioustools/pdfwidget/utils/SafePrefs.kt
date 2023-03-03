@@ -1,17 +1,17 @@
 package work.curioustools.pdfwidget.utils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 
-@SuppressLint("commitSharedPref")
+/**
+ * A safe implementation of shared preference that operates on runtime memory instead of
+ * SharedPreferences as read in SharedPreference is often a cause of ANR
+ */
 class SafePrefs private constructor(
     private val systemSP: SharedPreferences,
     private val inMemorySP: MutableMap<String, Any?> = hashMapOf()
 ) {
-    init {
-        systemSP.all.map { inMemorySP[it.key] = it.value }
-    }
+    init { systemSP.all.map { inMemorySP[it.key] = it.value } }
 
 
     fun getAll(): Map<String, Any?> = inMemorySP
@@ -73,24 +73,20 @@ class SafePrefs private constructor(
 
     companion object {
         private var singleton: SafePrefs? = null
+
         fun instance(appCtx: Context): SafePrefs {
             if (singleton != null) return singleton!!
+
             synchronized(SafePrefs::class.java) {
                 if (singleton != null) return singleton!!
                 else {
-                    val sp = appCtx.applicationContext.getSharedPreferences("DEFAULT_SP", Context.MODE_PRIVATE)
-                    singleton = SafePrefs(sp)
-                    singleton
+                    singleton = SafePrefs(appCtx.applicationContext.getSharedPreferences("DEFAULT_SP", Context.MODE_PRIVATE))
                     return singleton!!
                 }
             }
         }
     }
 
-
-    fun <T> Any.unsafeCast(): T {
-        return this as T
-    }
 
 
 }
